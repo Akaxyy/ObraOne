@@ -1,0 +1,38 @@
+import { GalleryVerticalEnd } from "lucide-react"
+
+import { SignupForm } from "@/src/components/SignUp-Form"
+
+export default function SignupPage() {
+    return (
+        <div className="grid min-h-svh lg:grid-cols-2">
+            <div className="flex flex-col gap-4 p-6 md:p-10">
+                <div className="flex justify-center gap-2 md:justify-start">
+                    <a href="sign-in" className="flex items-center gap-2 font-medium">
+                        <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
+                            <GalleryVerticalEnd className="size-4" />
+                        </div>
+                        ObraOne Inc.
+                    </a>
+                </div>
+                <div className="flex flex-1 items-center justify-center">
+                    <div className="w-full max-w-xs">
+                        <SignupForm />
+                    </div>
+                </div>
+            </div>
+            <div className="bg-primary hidden lg:flex flex-col justify-between p-18 text-white">
+                <div className="pt-18">
+                    <h1 className="text-3xl font-bold leading-tight">
+                        Soluções especializadas para obras e indústrias
+                    </h1>
+                    <p className="mt-4 text-lg">
+                        Acesse sua conta e gerencie suas operações com facilidade e segurança.
+                    </p>
+                </div>
+                <div className="text-sm">
+                    © 2025 ObraOne. Todos os direitos reservados.
+                </div>
+            </div>
+        </div>
+    )
+}
