@@ -20,8 +20,8 @@ export default function DashboardLayout({
                 <Navbar />
 
                 {/* B. Área de Conteúdo (Abaixo da Navbar, com scroll próprio) */}
-                <main className="flex-1 overflow-y-auto p-6 md:p-8 scroll-smooth">
-                    <div className="max-w-7xl mx-auto">
+                <main className="flex-1 overflow-y-auto scroll-smooth bg-neutral-50">
+                    <div>
                         {children}
                     </div>
                 </main>
