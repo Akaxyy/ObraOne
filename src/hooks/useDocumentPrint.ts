@@ -5,6 +5,9 @@ import { DOCS_CONFIG } from "@/src/lib/docs-registry";
 export function useDocumentPrint(data: any) {
     const [previewId, setPreviewId] = useState(DOCS_CONFIG[0].id);
     const [selectedIds, setSelectedIds] = useState<string[]>([DOCS_CONFIG[0].id]);
+    const [zoom, setZoom] = useState(1); // 1 = 100%
+    const zoomIn = () => setZoom(prev => Math.min(prev + 0.2, 2.0)); // Max 200%
+    const zoomOut = () => setZoom(prev => Math.max(prev - 0.2, 0.5)); // Min 50%
     const printRef = useRef<HTMLDivElement>(null);
 
     const toggleSelection = (id: string) => {
@@ -41,6 +44,7 @@ export function useDocumentPrint(data: any) {
         printRef,
         documentsToPrint,
         activeDocLabel,
+        zoom,
         PreviewComponent,
         docsConfig: DOCS_CONFIG, // Expõe a config para a UI iterar
 
@@ -48,5 +52,7 @@ export function useDocumentPrint(data: any) {
         toggleSelection,
         toggleSelectAll,
         handlePrint,
+        zoomIn,
+        zoomOut
     };
 }

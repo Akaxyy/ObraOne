@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import React from "react";
+import Image from "next/image";
 
 // Mapa para traduzir as rotas (opcional, mas deixa mais bonito)
 const routeMap: Record<string, string> = {
@@ -18,10 +19,16 @@ const routeMap: Record<string, string> = {
     tickets: "Tickets",
 };
 
-export default function Navbar() {
-    const pathname = usePathname();
+interface NavbarProps {
+    user?: {
+        name?: string | null;
+        email?: string | null;
+        image?: string | null;
+    };
+}
 
-    // Divide a URL em segmentos (ex: ['dashboard', 'projetos'])
+export default function Navbar({ user }: NavbarProps) {
+    const pathname = usePathname();
     const segments = pathname.split("/").filter(Boolean);
 
     // Gera o breadcrumb acumulando os caminhos
@@ -61,10 +68,19 @@ export default function Navbar() {
 
             {/* --- DIREITA: PERFIL / AVATAR --- */}
             <div className="flex items-center gap-4">
-                {/* Avatar "TH" igual à foto image_47384f.png */}
-                <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm cursor-pointer hover:bg-blue-700 transition-colors">
-                    TH
-                </div>
+                {user?.image ? (
+                    <Image
+                        src={user.image}
+                        alt={user.name || "Avatar"}
+                        width={36}
+                        height={36}
+                        className="rounded-full object-cover border border-gray-200 cursor-pointer shadow-sm">
+                    </Image>
+                ) : (
+                    <div className="w-9 h-9 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs font-bold shadow-sm cursor-pointer hover:bg-blue-700 transition-colors">
+                        {user?.name?.charAt(0).toUpperCase() || "U"}
+                    </div>
+                )}
             </div>
         </nav>
     );

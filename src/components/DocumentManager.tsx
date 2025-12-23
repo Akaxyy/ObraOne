@@ -7,7 +7,8 @@ import { useDocumentPrint } from '@/src/hooks/useDocumentPrint';
 export default function DocumentManager({ data }: { data: any }) {
     const {
         previewId, setPreviewId, selectedIds, toggleSelection, toggleSelectAll,
-        handlePrint, printRef, documentsToPrint, activeDocLabel, PreviewComponent, docsConfig
+        handlePrint, printRef, documentsToPrint, activeDocLabel, PreviewComponent, docsConfig,
+        zoom, zoomIn, zoomOut
     } = useDocumentPrint(data);
 
     return (
@@ -73,13 +74,23 @@ export default function DocumentManager({ data }: { data: any }) {
             {/* === ÁREA DE PREVIEW (Fundo diferente, sombras melhores) === */}
             <main className="flex-1 bg-slate-100/50 relative overflow-hidden flex flex-col">
                 {/* Header do Preview */}
-                <header className="h-16 border-b border-gray-200/60 bg-white/50 backdrop-blur flex items-center justify-between px-8">
-                    <span className="text-sm font-medium text-gray-500">Visualizando: <span className="text-gray-900 font-bold">{activeDocLabel}</span></span>
+                <header className="h-16 border-b flex justify-between items-center px-8">
+                    <span>Visualizando: {activeDocLabel}</span>
+
+                    {/* Controles de Zoom */}
+                    <div className="flex items-center gap-2 bg-white rounded-lg border p-1 shadow-sm">
+                        <button onClick={zoomOut} className="p-1 hover:bg-gray-100 rounded">-</button>
+                        <span className="text-xs w-12 text-center">{Math.round(zoom * 100)}%</span>
+                        <button onClick={zoomIn} className="p-1 hover:bg-gray-100 rounded">+</button>
+                    </div>
                 </header>
 
                 {/* Canvas de Papel */}
                 <div className="flex-1 overflow-auto flex justify-center p-8 custom-scrollbar">
-                    <div className="bg-white shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] w-[210mm] min-h-[297mm] origin-top transition-transform duration-500 ease-out border border-gray-100">
+                    <div
+                        className="bg-white shadow-xl w-[210mm] min-h-[297mm] origin-top transition-transform duration-200"
+                        style={{ transform: `scale(${zoom})` }} // Aqui aplica o zoom
+                    >
                         {PreviewComponent ? <PreviewComponent data={data} /> : <div className="flex items-center justify-center h-96 text-gray-400">Selecione um documento</div>}
                     </div>
                 </div>

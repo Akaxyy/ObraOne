@@ -72,6 +72,42 @@ export const MemorialCalculo = ({ data }: { data: any }) => {
                     aderência aos parâmetros definidos inicialmente.
                 </p>
             </section>
+
+            <section>
+                <h2 className="text-xl font-semibold text-blue-700 mb-3">
+                    4. Resultados Obtidos
+                </h2>
+
+                <p className="leading-relaxed">
+                    Os resultados indicam que os valores apurados atendem aos critérios
+                    estabelecidos no escopo do projeto, demonstrando viabilidade técnica e
+                    aderência aos parâmetros definidos inicialmente.
+                </p>
+            </section>
+
+            <section>
+                <h2 className="text-xl font-semibold text-blue-700 mb-3">
+                    4. Resultados Obtidos
+                </h2>
+
+                <p className="leading-relaxed">
+                    Os resultados indicam que os valores apurados atendem aos critérios
+                    estabelecidos no escopo do projeto, demonstrando viabilidade técnica e
+                    aderência aos parâmetros definidos inicialmente.
+                </p>
+            </section>
+
+            <section>
+                <h2 className="text-xl font-semibold text-blue-700 mb-3">
+                    4. Resultados Obtidos
+                </h2>
+
+                <p className="leading-relaxed">
+                    Os resultados indicam que os valores apurados atendem aos critérios
+                    estabelecidos no escopo do projeto, demonstrando viabilidade técnica e
+                    aderência aos parâmetros definidos inicialmente.
+                </p>
+            </section>
         </div>
     );
 }
