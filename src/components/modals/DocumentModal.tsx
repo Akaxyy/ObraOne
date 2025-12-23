@@ -33,7 +33,7 @@ export default function DocumentModal({ isOpen, onClose, data }: DocumentModalPr
             <div className="absolute inset-0" onClick={onClose}></div>
 
             {/* === 3. CONTAINER DO MODAL === */}
-            <div className="relative w-full max-w-[1400px] bg-transparent pointer-events-none">
+            <div className="relative w-[95%] md:w-11/12 max-w-6xl 2xl:max-w-[1400px] bg-transparent pointer-events-none">
 
                 {/* Botão de Fechar Flutuante (Lado de fora ou canto) */}
                 <button
