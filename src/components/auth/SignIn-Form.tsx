@@ -1,29 +1,42 @@
-"use client"
+"use client";
 
-import { cn } from "@/src/lib/utils"
-import { Button } from "@/src/components/ui/button"
+import { cn } from "@/src/lib/utils";
+import { Button } from "@/src/components/ui/button";
 import {
     Field,
     FieldDescription,
     FieldGroup,
     FieldLabel,
     FieldSeparator,
-} from "@/src/components/ui/field"
-import { Input } from "@/src/components/ui/input"
-import { useTransition } from "react"
-import { loginWithMicrosoft } from "@/src/lib/auth-actions"
+} from "@/src/components/ui/field";
+import { Input } from "@/src/components/ui/input";
+
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { signIn } from "@/src/lib/auth-client";
+import { translateAuthError } from "@/src/lib/auth-utils";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"form">) {
+    const router = useRouter();
+    const [error, setError] = useState<string | null>(null)
     const [isPending, startTransition] = useTransition()
 
-    // Handler para o login de email/senha (se tiver)
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
         const formData = new FormData(event.currentTarget)
+        setError(null);
 
         startTransition(async () => {
-            // await loginAction(formData)
-            console.log("Login com email/senha ainda a implementar")
+            const res = await signIn.email({
+                email: formData.get("email") as string,
+                password: formData.get("password") as string,
+            });
+
+            if (res.error) {
+                setError(translateAuthError(res.error) ?? "Email ou senha incorreta.")
+            } else {
+                router.push("/dashboard");
+            }
         })
     }
 
@@ -37,7 +50,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
                     </p>
                 </div>
 
-                {/* Inputs de Email/Senha */}
+                {error && (
+                    <div className="bg-red-50 text-red-600 text-sm p-3 rounded-md border border-red-200 text-center">
+                        {error}
+                    </div>
+                )}
+
                 <Field>
                     <FieldLabel htmlFor="email">Email</FieldLabel>
                     <Input name="email" id="email" type="email" placeholder="nome@c3engenharia.com.br" required />
@@ -53,20 +71,22 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
                 </Field>
 
                 <Field>
-                    <Button type="submit" disabled={isPending}>
+                    <Button
+                        type="submit"
+                        disabled={isPending}
+                        onClick={() => console.log("Click")}
+                    >
                         {isPending ? "Entrando..." : "Login"}
                     </Button>
                 </Field>
 
                 <FieldSeparator>Ou</FieldSeparator>
 
-                {/* BOTÃO DA MICROSOFT */}
                 <Field>
                     <Button
                         variant="outline"
                         type="button"
                         className="w-full flex gap-2"
-                        onClick={() => startTransition(() => loginWithMicrosoft())}
                         disabled={isPending}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 21" className="size-5">

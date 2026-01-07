@@ -6,8 +6,8 @@ import { ChevronRight } from "lucide-react";
 import { cn } from "@/src/lib/utils";
 import React from "react";
 import Image from "next/image";
+import { ModeToggle } from "./ModeToggle";
 
-// Mapa para traduzir as rotas (opcional, mas deixa mais bonito)
 const routeMap: Record<string, string> = {
     dashboard: "Início",
     projetos: "Projetos",
@@ -31,7 +31,6 @@ export default function Navbar({ user }: NavbarProps) {
     const pathname = usePathname();
     const segments = pathname.split("/").filter(Boolean);
 
-    // Gera o breadcrumb acumulando os caminhos
     const breadcrumbs = segments.map((segment, index) => {
         const href = "/" + segments.slice(0, index + 1).join("/");
         const label = routeMap[segment] || segment.charAt(0).toUpperCase() + segment.slice(1);
@@ -43,7 +42,7 @@ export default function Navbar({ user }: NavbarProps) {
     return (
         <nav className="h-16 w-full px-6 border-b border-neutral-200 bg-white flex items-center justify-between shrink-0 z-30">
 
-            {/* --- ESQUERDA: BREADCRUMBS --- */}
+            {/* --- BREADCRUMBS --- */}
             <div className="flex items-center gap-2 text-sm">
                 {breadcrumbs.map((crumb, index) => (
                     <React.Fragment key={crumb.href}>
@@ -66,7 +65,7 @@ export default function Navbar({ user }: NavbarProps) {
                 ))}
             </div>
 
-            {/* --- DIREITA: PERFIL / AVATAR --- */}
+            {/* --- AVATAR --- */}
             <div className="flex items-center gap-4">
                 {user?.image ? (
                     <Image

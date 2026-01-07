@@ -2,12 +2,13 @@
 
 import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
     Wrench, Scale, Bug, ChevronRight,
-    FolderKanban, User
+    FolderKanban, User, LogOut
 } from "lucide-react";
 import { cn } from "@/src/lib/utils";
+import { signOut } from "@/src/lib/auth-client";
 
 type NavItem = {
     label: string;
@@ -35,6 +36,7 @@ export default function Sidebar() {
     const [isExpanded, setIsExpanded] = useState(false);
     const [openSubmenus, setOpenSubmenus] = useState<string[]>([]);
     const pathname = usePathname();
+    const router = useRouter(); // 3. Instanciar o router
     const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleMouseEnter = () => {
@@ -68,6 +70,16 @@ export default function Sidebar() {
         );
     };
 
+    const handleSignOut = async () => {
+        await signOut({
+            fetchOptions: {
+                onSuccess: () => {
+                    router.push("/sign-in");
+                },
+            },
+        });
+    };
+
     return (
         <aside
             onMouseEnter={handleMouseEnter}
@@ -80,30 +92,17 @@ export default function Sidebar() {
         >
             {/* --- LOGO AREA --- */}
             <div className={cn(
-                "h-16 flex items-center border-b border-neutral-100 shrink-0 overflow-hidden relative",
-                // Mantido exatamente como solicitado: alinhado à esquerda com padding 4
-                "justify-start pl-4"
+                "h-16 flex items-center border-b border-neutral-100 shrink-0 overflow-hidden relative justify-start pl-4"
             )}>
                 <Link href="/dashboard" className="flex items-center overflow-hidden whitespace-nowrap outline-none">
-
-                    {/* Parte "Obra" - Slide suave */}
-                    <div
-                        className={cn(
-                            "flex items-center justify-end overflow-hidden transition-all duration-300 ease-in-out",
-                            // Removi o blur e efeitos extras, mantendo apenas opacidade e largura
-                            isExpanded ? "max-w-12 opacity-100" : "max-w-0 opacity-0"
-                        )}
-                    >
-                        {/* Fonte Bold padrão (mesmo peso do One) */}
+                    <div className={cn(
+                        "flex items-center justify-end overflow-hidden transition-all duration-300 ease-in-out",
+                        isExpanded ? "max-w-12 opacity-100" : "max-w-0 opacity-0"
+                    )}>
                         <span className="font-bold text-xl text-neutral-900 tracking-tight">Obra</span>
                     </div>
-
-                    {/* Parte "One" - Estática */}
                     <div className="flex items-baseline">
-                        {/* Removi o font-black exagerado e drop-shadow */}
                         <span className="font-bold text-xl text-blue-600 tracking-tight">One</span>
-
-                        {/* O Ponto (.) - Aparece suavemente */}
                         <div className={cn(
                             "w-1.5 h-1.5 rounded-full bg-blue-600 ml-0.5 mb-0.5 transition-all duration-300",
                             isExpanded ? "opacity-100 scale-100" : "opacity-0 scale-0"
@@ -133,31 +132,24 @@ export default function Sidebar() {
                                         : "text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100"
                                 )}
                             >
-                                {/* Container do Ícone - Centralizado na largura fechada (52px = 68px total - 16px padding) */}
                                 <div className="w-[52px] flex items-center justify-center shrink-0">
                                     <Icon size={19} className="transition-transform duration-300" />
                                 </div>
 
-                                {/* Container do Texto */}
-                                <div
-                                    className={cn(
-                                        "flex items-center overflow-hidden transition-all duration-300 ease-in-out whitespace-nowrap",
-                                        isExpanded ? "w-full opacity-100 translate-x-0" : "w-0 opacity-0"
-                                    )}
-                                >
+                                <div className={cn(
+                                    "flex items-center overflow-hidden transition-all duration-300 ease-in-out whitespace-nowrap",
+                                    isExpanded ? "w-full opacity-100 translate-x-0" : "w-0 opacity-0"
+                                )}>
                                     <span className="text-[13px] font-medium tracking-tight">
                                         {item.label}
                                     </span>
                                 </div>
 
-                                {/* Seta do Submenu */}
                                 {hasSubmenu && (
-                                    <div
-                                        className={cn(
-                                            "absolute right-2 transition-all duration-300",
-                                            isExpanded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
-                                        )}
-                                    >
+                                    <div className={cn(
+                                        "absolute right-2 transition-all duration-300",
+                                        isExpanded ? "opacity-100 translate-x-0" : "opacity-0 translate-x-4"
+                                    )}>
                                         <ChevronRight
                                             size={14}
                                             className={cn(
@@ -174,12 +166,10 @@ export default function Sidebar() {
                             </button>
 
                             {/* --- SUBMENU --- */}
-                            <div
-                                className={cn(
-                                    "grid transition-all duration-300 ease-in-out",
-                                    isExpanded && isSubmenuOpen ? "grid-rows-[1fr] opacity-100 mt-1" : "grid-rows-[0fr] opacity-0 mt-0"
-                                )}
-                            >
+                            <div className={cn(
+                                "grid transition-all duration-300 ease-in-out",
+                                isExpanded && isSubmenuOpen ? "grid-rows-[1fr] opacity-100 mt-1" : "grid-rows-[0fr] opacity-0 mt-0"
+                            )}>
                                 <div className="overflow-hidden">
                                     <div className="flex flex-col gap-0.5 border-l border-neutral-200 ml-[27px] pl-3 mb-1">
                                         {item.subItems?.map((subItem, subIndex) => (
@@ -204,13 +194,34 @@ export default function Sidebar() {
                 })}
             </nav>
 
-            {/* --- USER PROFILE --- */}
-            <div className="p-2 border-t border-neutral-100 shrink-0 overflow-hidden bg-white">
+            {/* --- USER PROFILE & LOGOUT --- */}
+            <div className="p-2 border-t border-neutral-100 shrink-0 overflow-hidden bg-white flex flex-col gap-1">
+
+                {/* Logout Button */}
+                <button
+                    onClick={handleSignOut}
+                    className={cn(
+                        "flex items-center h-10 rounded-md transition-all duration-200 outline-none overflow-hidden select-none w-full",
+                        "text-neutral-500 hover:bg-red-50 hover:text-red-600 group cursor-pointer"
+                    )}
+                    title="Sair do sistema"
+                >
+                    <div className="w-[52px] flex items-center justify-center shrink-0">
+                        <LogOut size={19} className="transition-transform duration-300 group-hover:scale-110" />
+                    </div>
+                    <div className={cn(
+                        "flex items-center overflow-hidden transition-all duration-300 ease-in-out whitespace-nowrap",
+                        isExpanded ? "w-full opacity-100 translate-x-0" : "w-0 opacity-0"
+                    )}>
+                        <span className="text-[13px] font-medium tracking-tight">Sair</span>
+                    </div>
+                </button>
+
+                {/* User Info - TODO */}
                 <div className={cn(
                     "flex items-center gap-2 rounded-lg p-1.5 transition-colors",
                     isExpanded ? "hover:bg-neutral-50" : ""
                 )}>
-                    {/* Avatar Simples (Sem gradiente) */}
                     <div className="w-10 flex items-center justify-center shrink-0">
                         <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700">
                             <User size={16} />

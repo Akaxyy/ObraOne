@@ -1,9 +1,16 @@
-import { auth } from "@/src/auth"
-import { redirect } from "next/navigation";
+import { auth } from "@/src/lib/auth";
+import { headers } from "next/headers";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
-    const session = await auth();
+    const session = await auth.api.getSession({
+        headers: await headers()
+    });
+
+    if (!session) {
+        redirect("/sign-in");
+    }
 
     return (
         <div className="p-10">
@@ -35,10 +42,9 @@ export default async function DashboardPage() {
                 </div>
             </div>
 
-            {/* Se quiser manter o debug escondido ou menor, use assim: */}
-            {/* <pre className="mt-8 text-xs bg-gray-900 text-white p-4 rounded overflow-auto h-40">
-        {JSON.stringify(session, null, 2)}
-      </pre> */}
+            <pre className="mt-8 text-xs bg-gray-900 text-white p-4 rounded overflow-auto h-40">
+                {JSON.stringify(session, null, 2)}
+            </pre>
         </div>
     );
 }

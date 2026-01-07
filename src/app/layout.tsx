@@ -3,6 +3,7 @@
 import { HeroUIProvider } from "@heroui/react";
 import "./globals.css";
 import NextTopLoader from "nextjs-toploader";
+import { Toaster } from "sonner";
 
 export default function RootLayout({
   children,
@@ -27,6 +28,7 @@ export default function RootLayout({
 
         <HeroUIProvider>
           {children}
+          <Toaster richColors position="top-right" />
         </HeroUIProvider>
       </body>
     </html>
