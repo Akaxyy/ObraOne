@@ -7,7 +7,6 @@
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
-  runtime  = "vercel-edge"
 }
 
 datasource db {
@@ -107,4 +106,24 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+model Project {
+  id             String   @id @default(cuid())
+  uniqueId       String?  @unique
+  budgetId       String?
+  contract       String?
+  projectName    String
+  scope          String?
+  sector         String?
+  tag            String?
+  team           Team?
+  valueBudget    Float?
+  valueRealized  Float?
+  valueRemaining Float?
+  slug           String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("projects")
 }

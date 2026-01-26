@@ -1,35 +1,37 @@
-"use client";
-
-import { HeroUIProvider } from "@heroui/react";
+// app/layout.tsx
+import type { Metadata } from "next";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import NextTopLoader from "nextjs-toploader";
-import { Toaster } from "sonner";
+import { Providers } from "./providers";
+
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "ObraOne.",
+  description: "Plataforma completa para gestão inteligente de obras.",
+};
 
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-br">
-      <body>
-        {/* O Loader fica aqui, como primeiro item do body */}
-        <NextTopLoader
-          color="#2563EB"
-          initialPosition={0.08}
-          crawlSpeed={200}
-          height={3}
-          crawl={true}
-          showSpinner={false}
-          easing="ease"
-          speed={200}
-          shadow="0 0 10px #2563EB,0 0 5px #2563EB"
-        />
-
-        <HeroUIProvider>
+    <html lang="pt-br" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased overflow-hidden`}
+      >
+        <Providers>
           {children}
-          <Toaster richColors position="top-right" />
-        </HeroUIProvider>
+        </Providers>
       </body>
     </html>
   );

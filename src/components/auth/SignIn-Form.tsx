@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/src/lib/utils/utils";
 import { Button } from "@/src/components/ui/button";
 import {
     Field,
@@ -13,8 +13,8 @@ import { Input } from "@/src/components/ui/input";
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { signIn } from "@/src/lib/auth-client";
-import { translateAuthError } from "@/src/lib/auth-utils";
+import { signIn } from "@/src/lib/better-auth/auth-client";
+import { translateAuthError } from "@/src/utils/auth-utils";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"form">) {
     const router = useRouter();

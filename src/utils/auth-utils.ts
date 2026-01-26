@@ -1,4 +1,4 @@
-// src/lib/auth-utils.ts
+// src/utils/auth-utils.ts
 
 export function translateAuthError(error: { code?: string; message?: string } | null | undefined): string {
     if (!error) return "Erro desconhecido.";

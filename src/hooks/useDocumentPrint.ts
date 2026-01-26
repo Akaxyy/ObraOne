@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useReactToPrint } from "react-to-print";
-import { DOCS_CONFIG } from "@/src/lib/docs-registry";
+import { DOCS_CONFIG } from "@/src/lib/utils/docs-registry";
 
 export function useDocumentPrint(data: any) {
     const [previewId, setPreviewId] = useState(DOCS_CONFIG[0].id);

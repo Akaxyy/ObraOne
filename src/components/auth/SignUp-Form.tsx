@@ -1,6 +1,6 @@
 "use client";
 
-import { cn } from "@/src/lib/utils";
+import { cn } from "@/src/lib/utils/utils";
 import { Button } from "@/src/components/ui/button";
 import {
   Field,
@@ -13,8 +13,12 @@ import { Input } from "@/src/components/ui/input";
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { signUp } from "@/src/lib/auth-client";
-import { translateAuthError } from "@/src/lib/auth-utils";
+import { signUp } from "@/src/lib/better-auth/auth-client";
+import { translateAuthError } from "@/src/utils/auth-utils";
+
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signupSchema, type SignupValues } from "@/src/schemas/auth";
 
 export function SignupForm({
   className,
@@ -24,40 +28,30 @@ export function SignupForm({
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const { register, handleSubmit, formState: { errors } } = useForm<SignupValues>({
+    resolver: zodResolver(signupSchema),
+  });
+
+  const onSubmit = (data: SignupValues) => {
     setError(null);
-
-    const formData = new FormData(event.currentTarget);
-    const name = formData.get("name") as string;
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const confirmPassword = formData.get("confirm-password") as string;
-
-    if (password !== confirmPassword) {
-      setError("As senhas não coincidem.");
-      return;
-    }
-
     startTransition(async () => {
       const res = await signUp.email({
-        email,
-        password,
-        name,
+        email: data.email,
+        password: data.password,
+        name: data.name,
         callbackURL: "/dashboard",
       });
 
       if (res.error) {
-        setError(translateAuthError(res.error) ?? "Algo errado aconteceu.");
+        setError(translateAuthError(res.error) ?? "Erro ao criar conta.");
       } else {
         router.push("/dashboard");
       }
     });
   };
 
-
   return (
-    <form onSubmit={handleSubmit} className={cn("flex flex-col gap-6", className)} {...props}>
+    <form onSubmit={handleSubmit(onSubmit)} className={cn("flex flex-col gap-6", className)} {...props}>
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
           <h1 className="text-2xl font-bold">Crie sua conta</h1>
@@ -72,27 +66,63 @@ export function SignupForm({
           </div>
         )}
 
-        <Field>
-          <FieldLabel htmlFor="name">Nome Completo</FieldLabel>
-          <Input name="name" id="name" type="text" placeholder="Digite seu nome..." required />
+        <Field className="relative">
+          <FieldLabel>Nome Completo</FieldLabel>
+          <Input
+            {...register("name")}
+            placeholder="Seu nome"
+            className={errors.name && "border-red-500 focus-visible:ring-red-500"}
+          />
+          {errors.name && (
+            <span className="absolute -bottom-5 left-0 text-xs text-red-500 font-medium">
+              {errors.name.message}
+            </span>
+          )}
         </Field>
 
-        <Field>
-          <FieldLabel htmlFor="email">Email</FieldLabel>
-          <Input name="email" id="email" type="email" placeholder="Digite seu email..." required />
+        <Field className="relative">
+          <FieldLabel>Email</FieldLabel>
+          <Input
+            {...register("email")}
+            type="email"
+            placeholder="seu@email.com"
+            className={errors.email && "border-red-500 focus-visible:ring-red-500"}
+          />
+          {errors.email && (
+            <span className="absolute -bottom-5 left-0 text-xs text-red-500 font-medium">
+              {errors.email.message}
+            </span>
+          )}
         </Field>
 
-        <Field>
-          <FieldLabel htmlFor="password">Senha</FieldLabel>
-          <Input name="password" id="password" type="password" placeholder="********" required />
-          <FieldDescription>
-            Deve ter no mínimo 8 caracteres.
-          </FieldDescription>
+        <Field className="relative">
+          <FieldLabel>Senha</FieldLabel>
+          <Input
+            {...register("password")}
+            type="password"
+            placeholder="********"
+            className={errors.password && "border-red-500 focus-visible:ring-red-500"}
+          />
+          {errors.password && (
+            <span className="absolute -bottom-5 left-0 text-xs text-red-500 font-medium">
+              {errors.password.message}
+            </span>
+          )}
         </Field>
 
-        <Field>
-          <FieldLabel htmlFor="confirm-password">Confirme a Senha</FieldLabel>
-          <Input name="confirm-password" id="confirm-password" type="password" placeholder="********" required />
+        <Field className="relative">
+          <FieldLabel>Confirmar Senha</FieldLabel>
+          <Input
+            {...register("confirmPassword")}
+            type="password"
+            placeholder="********"
+            className={errors.confirmPassword && "border-red-500 focus-visible:ring-red-500"}
+          />
+          {errors.confirmPassword && (
+            <span className="absolute -bottom-5 left-0 text-xs text-red-500 font-medium">
+              {errors.confirmPassword.message}
+            </span>
+          )}
         </Field>
 
         <Field>

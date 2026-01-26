@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { auth } from "@/src/lib/auth";
+import { auth } from "@/src/lib/better-auth/auth";
 
 export async function proxy(request: NextRequest) {
     const { pathname } = request.nextUrl;
