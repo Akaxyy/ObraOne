@@ -13,7 +13,7 @@ import { Input } from "@/src/components/ui/input";
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { signUp } from "@/src/lib/better-auth/auth-client";
+//import { signUp } from "@/src/lib/better-auth/auth-client";
 import { translateAuthError } from "@/src/utils/auth-utils";
 
 import { useForm } from "react-hook-form";
@@ -35,18 +35,18 @@ export function SignupForm({
   const onSubmit = (data: SignupValues) => {
     setError(null);
     startTransition(async () => {
-      const res = await signUp.email({
-        email: data.email,
-        password: data.password,
-        name: data.name,
-        callbackURL: "/dashboard",
-      });
+      // const res = await signUp.email({
+      //   email: data.email,
+      //   password: data.password,
+      //   name: data.name,
+      //   callbackURL: "/dashboard",
+      // });
 
-      if (res.error) {
-        setError(translateAuthError(res.error) ?? "Erro ao criar conta.");
-      } else {
-        router.push("/dashboard");
-      }
+      // if (res.error) {
+      //   setError(translateAuthError(res.error) ?? "Erro ao criar conta.");
+      // } else {
+      //   router.push("/dashboard");
+      // }
     });
   };
 

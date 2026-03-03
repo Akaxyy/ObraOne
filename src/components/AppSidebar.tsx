@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
     Wrench, Scale, Bug, ChevronRight,
-    FolderKanban, User, LogOut, MoreHorizontal
+    FolderKanban, User, LogOut, MoreHorizontal, Settings
 } from "lucide-react";
 import { cn } from "@/src/lib/utils/utils";
 
@@ -36,7 +36,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-import { signOut } from "@/src/lib/better-auth/auth-client";
+//import { signOut } from "@/src/lib/better-auth/auth-client";
 
 const navItems = [
     { title: "Projetos", icon: FolderKanban, url: "/dashboard/projetos" },
@@ -51,6 +51,7 @@ const navItems = [
     },
     { title: "Administrador", icon: Scale, url: "/dashboard/admin" },
     { title: "Tickets", icon: Bug, url: "/dashboard/tickets" },
+    { title: "Configurações", icon: Settings, url: "/dashboard/config" },
 ];
 
 export function AppSidebar() {
@@ -59,9 +60,9 @@ export function AppSidebar() {
     const { open, setOpen } = useSidebar();
 
     const handleSignOut = async () => {
-        await signOut({
-            fetchOptions: { onSuccess: () => router.push("/sign-in") },
-        });
+        // await signOut({
+        //     fetchOptions: { onSuccess: () => router.push("/sign-in") },
+        // });
     };
 
     return (
@@ -129,7 +130,8 @@ export function AppSidebar() {
                                 <Collapsible
                                     key={item.title}
                                     asChild
-                                    defaultOpen={item.items?.some(sub => pathname === sub.url)}
+                                    // Always open Medições dropdown by default
+                                    defaultOpen={item.title === "Medições" ? true : item.items?.some(sub => pathname === sub.url)}
                                     className="group/collapsible"
                                 >
                                     <SidebarMenuItem>

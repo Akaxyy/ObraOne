@@ -1,30 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
-import { auth } from "@/src/lib/better-auth/auth";
 
 export async function proxy(request: NextRequest) {
-    const { pathname } = request.nextUrl;
+    // const { pathname } = request.nextUrl;
 
-    const session = await auth.api.getSession({
-        headers: await headers()
-    });
+    // const session = await auth.api.getSession({
+    //     headers: await headers()
+    // });
 
-    const isDashboardRoute = pathname.startsWith("/dashboard");
-    const isAuthRoute = pathname === "/sign-in"
+    // const isDashboardRoute = pathname.startsWith("/dashboard");
+    // const isAuthRoute = pathname === "/sign-in"
 
-    const isDev = process.env.NODE_ENV === "development";
+    // const isDev = process.env.NODE_ENV === "development";
 
-    if (isDev) {
-        return NextResponse.next();
-    }
+    // if (isDev) {
+    //     return NextResponse.next();
+    // }
 
-    if (isDashboardRoute && !session) {
-        return NextResponse.redirect(new URL("/sign-in", request.url));
-    }
+    // if (isDashboardRoute && !session) {
+    //     return NextResponse.redirect(new URL("/sign-in", request.url));
+    // }
 
-    if (isAuthRoute && session) {
-        return NextResponse.redirect(new URL("/dashboard", request.url));
-    }
+    // if (isAuthRoute && session) {
+    //     return NextResponse.redirect(new URL("/dashboard", request.url));
+    // }
 
     return NextResponse.next();
 }

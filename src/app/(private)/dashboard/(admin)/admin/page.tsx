@@ -15,7 +15,7 @@ export default function Admin() {
                 </span>
 
                 <p className="mt-2 text-xs font-mono text-muted-foreground">
-                    // Log do sistema iniciado...
+                    Log do sistema iniciado...
                 </p>
             </div>
         </div>

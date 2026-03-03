@@ -14,21 +14,19 @@ export function Providers({ children }: { children: React.ReactNode }) {
             enableSystem
             disableTransitionOnChange
         >
-            <HeroUIProvider>
-                <NextTopLoader
-                    color="#2563EB"
-                    initialPosition={0.08}
-                    crawlSpeed={200}
-                    height={3}
-                    crawl={true}
-                    showSpinner={false}
-                    easing="ease"
-                    speed={200}
-                    shadow="0 0 10px #2563EB,0 0 5px #2563EB"
-                />
-                {children}
-                <Toaster richColors position="top-right" />
-            </HeroUIProvider>
+            <NextTopLoader
+                color="#2563EB"
+                initialPosition={0.08}
+                crawlSpeed={200}
+                height={3}
+                crawl={true}
+                showSpinner={false}
+                easing="ease"
+                speed={200}
+                shadow="0 0 10px #2563EB,0 0 5px #2563EB"
+            />
+            {children}
+            <Toaster richColors position="top-right" />
         </ThemeProvider>
     );
 }

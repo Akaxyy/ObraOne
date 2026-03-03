@@ -13,7 +13,7 @@ import { Input } from "@/src/components/ui/input";
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { signIn } from "@/src/lib/better-auth/auth-client";
+//import { signIn } from "@/src/lib/better-auth/auth-client";
 import { translateAuthError } from "@/src/utils/auth-utils";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"form">) {
@@ -27,16 +27,16 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
         setError(null);
 
         startTransition(async () => {
-            const res = await signIn.email({
-                email: formData.get("email") as string,
-                password: formData.get("password") as string,
-            });
+            // const res = await signIn.email({
+            //     email: formData.get("email") as string,
+            //     password: formData.get("password") as string,
+            // });
 
-            if (res.error) {
-                setError(translateAuthError(res.error) ?? "Email ou senha incorreta.")
-            } else {
-                router.push("/dashboard");
-            }
+            // if (res.error) {
+            //     setError(translateAuthError(res.error) ?? "Email ou senha incorreta.")
+            // } else {
+            //     router.push("/dashboard");
+            // }
         })
     }
 
