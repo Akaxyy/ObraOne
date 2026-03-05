@@ -25,7 +25,7 @@ export default async function DashboardLayout({
                     <Navbar user={undefined} />
                 </header>
 
-                <main className="flex-1 flex flex-col pt-0 bg-muted/40 overflow-y-auto">
+                <main className="flex-1 flex flex-col min-h-0 pt-0 bg-muted/40 overflow-auto">
                     {children}
                 </main>
             </SidebarInset>

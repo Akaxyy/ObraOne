@@ -1,3 +1,4 @@
+import Image from "next/image"
 import { GalleryVerticalEnd } from "lucide-react"
 import { SignupForm } from "@/src/components/auth/SignUp-Form"
 
@@ -5,7 +6,7 @@ export default function SignupPage() {
     return (
         <div className="grid min-h-svh lg:grid-cols-2">
             {/* Register Form */}
-            <div className="flex flex-col gap-4 p-6 md:p-10">
+            <div className="flex flex-col gap-4 p-6 md:p-6">
                 <div className="flex justify-center gap-2 md:justify-start">
                     <a href="sign-in" className="flex items-center gap-2 font-medium">
                         <div className="bg-primary text-primary-foreground flex size-6 items-center justify-center rounded-md">
@@ -27,9 +28,11 @@ export default function SignupPage() {
 
                 {/* TODO: Change img src for /public link */}
                 <div className="absolute inset-0 bg-blue-900">
-                    <img
+                    <Image
                         src="https://c3engenharia.com.br/wp-content/themes/c3-egenharia-site/assets/images/solucoes/image-section3.png"
-                        className="h-full w-full object-cover opacity-40 mix-blend-overlay"
+                        alt="construction scene background"
+                        fill
+                        className="object-cover opacity-40 mix-blend-overlay"
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-blue-950 via-blue-900/60 to-blue-900/10" />
                 </div>

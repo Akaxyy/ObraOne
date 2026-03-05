@@ -1,9 +1,7 @@
 "use client";
 
-import { HeroUIProvider } from "@heroui/react";
 import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "sonner";
-// Importe o ThemeProvider que você criou ou que a lib fornece
 import { ThemeProvider } from "@/src/components/providers/theme-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {

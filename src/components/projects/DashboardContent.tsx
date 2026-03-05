@@ -1,34 +1,39 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { DollarSign, Wrench, TrendingUp } from "lucide-react"
-import { MetricCard } from "@/src/components/projects/metric-card"
-import { ProjectsContainer } from "@/src/components/projects/projects-container"
-import { ProjectSidePanel } from "@/src/components/projects/project-side-panel"
-import { Project } from "@/src/hooks/useProjects"
+import { MetricCard } from "@/src/components/projects/MetricCard"
+import { ProjectsContainer } from "@/src/components/projects/ProjectContainer"
+import { ProjectSidePanel } from "@/src/components/projects/ProjectSidePanel"
+import type { Project } from "@/src/types/projects"
+import { useProjects } from "@/src/hooks/useProjects"
 import { useSidebar } from "@/src/components/ui/sidebar"
+import { useProjectFilters } from '@/src/hooks/useProjectFilters'
+import { CreateProjectButton } from './CreateProject'
 
 export function DashboardContent() {
+    const {
+        projects,
+        loading,
+        saving,
+        error,
+        addProject,
+        updateProject,
+        deleteProject,
+    } = useProjects()
+
+    const { filters, setFilters, filteredProjects } = useProjectFilters(projects)
+
     const [selectedProject, setSelectedProject] = useState<Project | null>(null)
     const [displayedProject, setDisplayedProject] = useState<Project | null>(null)
     const [isClosing, setIsClosing] = useState(false)
 
+    // Ref to trigger add dialog in ProjectsContainer
+    const projectsContainerRef = useRef<{ openAddDialog: () => void }>(null)
+
     const { state: sidebarState, setOpen: setSidebarOpen } = useSidebar()
 
-    // Close Side Panel when Sidebar opens
-    useEffect(() => {
-        if (sidebarState === 'expanded' && selectedProject !== null) {
-            // Trigger close animation
-            setIsClosing(true)
-            setSelectedProject(null)
-            setTimeout(() => {
-                setDisplayedProject(null)
-                setIsClosing(false)
-            }, 1)
-        }
-    }, [sidebarState])
-
-    const handleSelectProject = (project: Project | null) => {
+    const handleSelectProject = useCallback((project: Project | null) => {
         if (project === null && selectedProject !== null) {
             setIsClosing(true)
             setSelectedProject(null)
@@ -37,12 +42,26 @@ export function DashboardContent() {
                 setIsClosing(false)
             }, 1)
         } else if (project !== null) {
-            // Opening Side Panel: close Sidebar first
-            setSidebarOpen(false)
             setDisplayedProject(project)
             setSelectedProject(project)
             setIsClosing(false)
+            // Close AppSidebar when project side panel opens
+            setSidebarOpen(false)
         }
+    }, [selectedProject, setSidebarOpen])
+
+    // Close Side Panel when Sidebar opens
+    useEffect(() => {
+        if (sidebarState === 'expanded' && selectedProject !== null) {
+            const timer = setTimeout(() => {
+                handleSelectProject(null)
+            }, 0)
+            return () => clearTimeout(timer)
+        }
+    }, [sidebarState, selectedProject, handleSelectProject])
+
+    const handleOpenAddDialog = () => {
+        projectsContainerRef.current?.openAddDialog()
     }
 
     // Determine if side panel space should be shown (either open or closing)
@@ -82,8 +101,29 @@ export function DashboardContent() {
                     />
                 </div>
 
-                {/* Projects Container - includes FilterBar + ProjectsList */}
+                {/* Filter Section - Now in DashboardContent */}
+                <div className="bg-background p-4 flex border-b border-border shrink-0 justify-between items-center">
+                    <div className="flex-1">
+                        <CreateProjectButton
+                            onAddClick={handleOpenAddDialog}
+                            showAddButton={!selectedProject}
+                            filters={filters}
+                            onFiltersChange={setFilters}
+                        />
+                    </div>
+                </div>
+
+                {/* Projects Container - Now only includes the ProjectsList + Dialogs */}
                 <ProjectsContainer
+                    ref={projectsContainerRef}
+                    projects={projects}
+                    filteredProjects={filteredProjects}
+                    loading={loading}
+                    saving={saving}
+                    error={error}
+                    addProject={addProject}
+                    updateProject={updateProject}
+                    deleteProject={deleteProject}
                     selectedProject={selectedProject}
                     onSelectProject={handleSelectProject}
                 />
@@ -91,7 +131,7 @@ export function DashboardContent() {
 
             {/* Right Column: Side Panel wrapper with animated width */}
             <div
-                className={`shrink-0 transition-all duration-300 ease-out overflow-hidden ${showSidePanelSpace ? 'w-[300px]' : 'w-0'
+                className={`shrink-0 transition-all duration-300 ease-out overflow-hidden ${showSidePanelSpace ? 'w-75' : 'w-0'
                     }`}
             >
                 {displayedProject && (

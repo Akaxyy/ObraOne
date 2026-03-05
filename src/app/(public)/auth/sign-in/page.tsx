@@ -1,5 +1,6 @@
 import { GalleryVerticalEnd } from "lucide-react"
 import { LoginForm } from "@/src/components/auth/SignIn-Form"
+import Image from "next/image"
 
 export default function SignInPage() {
     return (
@@ -26,9 +27,11 @@ export default function SignInPage() {
 
                 {/* TODO: Change img src for /public link */}
                 <div className="absolute inset-0 bg-blue-900">
-                    <img
+                    <Image
                         src="https://c3engenharia.com.br/wp-content/themes/c3-egenharia-site/assets/images/solucoes/image-section3.png"
-                        className="h-full w-full object-cover opacity-40 mix-blend-overlay"
+                        alt="construction scene background"
+                        fill
+                        className="object-cover opacity-40 mix-blend-overlay"
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-blue-950 via-blue-900/60 to-blue-900/10" />
                 </div>

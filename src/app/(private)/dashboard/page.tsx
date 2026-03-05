@@ -1,15 +1,14 @@
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { DashboardContent } from "@/src/components/projects/dashboard-content";
+import { DashboardContent } from "@/src/components/projects/DashboardContent";
+import { createClient } from "@/src/lib/supabase/server";
 
 export default async function DashboardPage() {
-    // const session = await auth.api.getSession({
-    //     headers: await headers()
-    // });
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
 
-    // if (!session) {
-    //     redirect("/sign-in");
-    // }
+    if (!user) {
+        redirect("/auth/sign-in");
+    }
 
     return (
         <div className="h-full overflow-hidden bg-muted/40 flex flex-col">

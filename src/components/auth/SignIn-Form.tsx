@@ -13,35 +13,48 @@ import { Input } from "@/src/components/ui/input";
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-//import { signIn } from "@/src/lib/better-auth/auth-client";
-import { translateAuthError } from "@/src/utils/auth-utils";
+import { createClient } from "@/src/lib/supabase/client";
 
-export function LoginForm({ className, ...props }: React.ComponentProps<"form">) {
+export function LoginForm({
+    className,
+    ...props
+}: React.ComponentProps<"form">) {
     const router = useRouter();
-    const [error, setError] = useState<string | null>(null)
-    const [isPending, startTransition] = useTransition()
+    const supabase = createClient();
+
+    const [error, setError] = useState<string | null>(null);
+    const [isPending, startTransition] = useTransition();
 
     const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault()
-        const formData = new FormData(event.currentTarget)
+        event.preventDefault();
+
+        const formData = new FormData(event.currentTarget);
+        const email = formData.get("email") as string;
+        const password = formData.get("password") as string;
+
         setError(null);
 
         startTransition(async () => {
-            // const res = await signIn.email({
-            //     email: formData.get("email") as string,
-            //     password: formData.get("password") as string,
-            // });
+            const { error } = await supabase.auth.signInWithPassword({
+                email,
+                password,
+            });
 
-            // if (res.error) {
-            //     setError(translateAuthError(res.error) ?? "Email ou senha incorreta.")
-            // } else {
-            //     router.push("/dashboard");
-            // }
-        })
-    }
+            if (error) {
+                setError("Email ou senha incorretos.");
+            } else {
+                router.push("/dashboard");
+                router.refresh();
+            }
+        });
+    };
 
     return (
-        <form onSubmit={handleSubmit} className={cn("flex flex-col gap-6", className)} {...props}>
+        <form
+            onSubmit={handleSubmit}
+            className={cn("flex flex-col gap-6", className)}
+            {...props}
+        >
             <FieldGroup>
                 <div className="flex flex-col items-center gap-1 text-center">
                     <h1 className="text-2xl font-bold">Faça login na sua conta</h1>
@@ -58,24 +71,31 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
 
                 <Field>
                     <FieldLabel htmlFor="email">Email</FieldLabel>
-                    <Input name="email" id="email" type="email" placeholder="nome@c3engenharia.com.br" required />
+                    <Input
+                        name="email"
+                        id="email"
+                        type="email"
+                        placeholder="nome@c3engenharia.com.br"
+                        required
+                    />
                 </Field>
+
                 <Field>
                     <div className="flex items-center">
                         <FieldLabel htmlFor="password">Senha</FieldLabel>
-                        <a href="#" className="ml-auto text-sm underline-offset-4 hover:underline">
+                        <a
+                            href="#"
+                            className="ml-auto text-sm underline-offset-4 hover:underline"
+                        >
                             Esqueceu a senha?
                         </a>
                     </div>
+
                     <Input name="password" id="password" type="password" required />
                 </Field>
 
                 <Field>
-                    <Button
-                        type="submit"
-                        disabled={isPending}
-                        onClick={() => console.log("Click")}
-                    >
+                    <Button type="submit" disabled={isPending}>
                         {isPending ? "Entrando..." : "Login"}
                     </Button>
                 </Field>
@@ -89,23 +109,27 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"form">)
                         className="w-full flex gap-2"
                         disabled={isPending}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21 21" className="size-5">
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            viewBox="0 0 21 21"
+                            className="size-5"
+                        >
                             <rect x="1" y="1" width="9" height="9" fill="#F25022" />
                             <rect x="11" y="1" width="9" height="9" fill="#7FBA00" />
                             <rect x="1" y="11" width="9" height="9" fill="#00A4EF" />
                             <rect x="11" y="11" width="9" height="9" fill="#FFB900" />
                         </svg>
-                        Entrar com @c3engenharia.com.br
+                        Entrar com Microsoft
                     </Button>
 
                     <FieldDescription className="text-center mt-2">
                         Não tem uma conta?{" "}
-                        <a href="/sign-up" className="underline underline-offset-4">
+                        <a href="/auth/sign-up" className="underline underline-offset-4">
                             Registre-se
                         </a>
                     </FieldDescription>
                 </Field>
             </FieldGroup>
         </form>
-    )
+    );
 }

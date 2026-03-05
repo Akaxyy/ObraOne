@@ -1,32 +1,11 @@
-import { useEffect, useState, useCallback } from 'react'
-import { supabase } from '@/src/lib/supabase/supabase'
+import { useEffect, useState, useCallback, useMemo } from 'react'
+import { createClient } from '@/src/lib/supabase/client'
+import type { Project, ProjectFormData } from '@/src/types/projects'
 
-export type Project = {
-    id: string
-    uniqueId: string | null
-    budgetId: string | null
-    contract: string | null
-    projectName: string
-    scope: string | null
-    sector: string | null
-    tag: string | null
-    team: string | null
-    valueBudget: number | null
-    valueRealized: number | null
-    valueRemaining: number | null
-    slug: string | null
-    createdAt: string
-    updatedAt: string
-}
-
-export type ProjectFormData = {
-    projectName: string
-    tag: string
-    scope: string
-    team: string
-    valueBudget: number
-    valueRealized: number
-}
+// Re-export types and utilities for backward compatibility
+export type { Project, ProjectFormData } from '@/src/types/projects'
+export { TEAM_OPTIONS, TEAM_COLORS, createEmptyFormData, projectToFormData } from '@/src/types/projects'
+export { formatCurrency } from '@/src/lib/format'
 
 export type UseProjectsReturn = {
     // State
@@ -44,6 +23,8 @@ export type UseProjectsReturn = {
 }
 
 export function useProjects(limit: number = 20): UseProjectsReturn {
+    const supabase = useMemo(() => createClient(), [])
+
     const [projects, setProjects] = useState<Project[]>([])
     const [loading, setLoading] = useState(true)
     const [saving, setSaving] = useState(false)
@@ -68,7 +49,7 @@ export function useProjects(limit: number = 20): UseProjectsReturn {
             setProjects(data || [])
         }
         setLoading(false)
-    }, [limit])
+    }, [supabase, limit])
 
     // Add project
     const addProject = useCallback(async (data: ProjectFormData): Promise<boolean> => {
@@ -95,7 +76,7 @@ export function useProjects(limit: number = 20): UseProjectsReturn {
         }
 
         return true
-    }, [])
+    }, [supabase])
 
     // Update project
     const updateProject = useCallback(async (id: string, data: ProjectFormData): Promise<boolean> => {
@@ -124,7 +105,7 @@ export function useProjects(limit: number = 20): UseProjectsReturn {
         }
 
         return true
-    }, [])
+    }, [supabase])
 
     // Delete project
     const deleteProject = useCallback(async (id: string): Promise<boolean> => {
@@ -145,7 +126,7 @@ export function useProjects(limit: number = 20): UseProjectsReturn {
         }
 
         return true
-    }, [])
+    }, [supabase])
 
     // Initial fetch and Realtime subscription
     useEffect(() => {
@@ -186,7 +167,7 @@ export function useProjects(limit: number = 20): UseProjectsReturn {
         return () => {
             supabase.removeChannel(channel)
         }
-    }, [fetchProjects])
+    }, [supabase, fetchProjects])
 
     return {
         projects,
@@ -198,47 +179,5 @@ export function useProjects(limit: number = 20): UseProjectsReturn {
         updateProject,
         deleteProject,
         refreshProjects: fetchProjects,
-    }
-}
-
-// Utility constants
-export const TEAM_OPTIONS = ['Rotina', 'Tanques', 'Paradas', 'Pacotes', 'BM_Anterior'] as const
-
-export const TEAM_COLORS: Record<string, string> = {
-    Rotina: 'bg-blue-500',
-    Tanques: 'bg-green-500',
-    Paradas: 'bg-orange-500',
-    Pacotes: 'bg-purple-500',
-    BM_Anterior: 'bg-gray-500',
-}
-
-// Utility functions
-export function formatCurrency(value: number | null): string {
-    if (value === null || value === undefined) return 'R$ 0,00'
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL',
-    }).format(value)
-}
-
-export function createEmptyFormData(): ProjectFormData {
-    return {
-        projectName: '',
-        tag: '',
-        scope: '',
-        team: 'Rotina',
-        valueBudget: 0,
-        valueRealized: 0,
-    }
-}
-
-export function projectToFormData(project: Project): ProjectFormData {
-    return {
-        projectName: project.projectName,
-        tag: project.tag || '',
-        scope: project.scope || '',
-        team: project.team || 'Rotina',
-        valueBudget: project.valueBudget || 0,
-        valueRealized: project.valueRealized || 0,
     }
 }

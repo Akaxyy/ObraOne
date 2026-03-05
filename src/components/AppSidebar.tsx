@@ -36,7 +36,7 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/src/components/ui/dropdown-menu";
-//import { signOut } from "@/src/lib/better-auth/auth-client";
+import { logout } from "@/src/actions/auth";
 
 const navItems = [
     { title: "Projetos", icon: FolderKanban, url: "/dashboard/projetos" },
@@ -60,9 +60,7 @@ export function AppSidebar() {
     const { open, setOpen } = useSidebar();
 
     const handleSignOut = async () => {
-        // await signOut({
-        //     fetchOptions: { onSuccess: () => router.push("/sign-in") },
-        // });
+        await logout();
     };
 
     return (
@@ -205,9 +203,10 @@ export function AppSidebar() {
                                     <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-primary/20 text-primary">
                                         <User size={16} />
                                     </div>
+                                    {/* TODO: Replace with dynamic user data from session */}
                                     <div className="grid flex-1 text-left text-sm leading-tight">
-                                        <span className="truncate font-semibold">Thiago</span>
-                                        <span className="truncate text-xs">Engenheiro</span>
+                                        <span className="truncate font-semibold">Usuário</span>
+                                        <span className="truncate text-xs">Equipe</span>
                                     </div>
                                     <MoreHorizontal className="ml-auto size-4" />
                                 </SidebarMenuButton>

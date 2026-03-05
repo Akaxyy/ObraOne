@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useMemo } from 'react'
-import { Project, formatCurrency } from '@/src/hooks/useProjects'
+import type { Project } from '@/src/types/projects'
+import { formatCurrency } from '@/src/lib/format'
 import { Button } from '@/src/components/ui/button'
 import { Badge } from '@/src/components/ui/badge'
 import {

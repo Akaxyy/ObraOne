@@ -54,13 +54,13 @@ export default function Page() {
             <div className="flex items-center gap-3">
               <button
                 onClick={() => saveLocale("pt-BR")}
-                className={"px-3 py-2 rounded-md border "+ (locale === "pt-BR" ? "border-primary" : "border-border")}
+                className={"px-3 py-2 rounded-md border " + (locale === "pt-BR" ? "border-primary" : "border-border")}
               >
                 PT-BR
               </button>
               <button
                 onClick={() => saveLocale("en")}
-                className={"px-3 py-2 rounded-md border "+ (locale === "en" ? "border-primary" : "border-border")}
+                className={"px-3 py-2 rounded-md border " + (locale === "en" ? "border-primary" : "border-border")}
               >
                 EN
               </button>

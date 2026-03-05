@@ -1,15 +1,7 @@
-// import { auth } from "@/src/lib/better-auth/auth";
-import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+// Root page — redirects authenticated users to the dashboard.
+// TODO: Add auth check to redirect unauthenticated users to /auth/sign-in
 export default async function Home() {
-    // const session = await auth.api.getSession({
-    //     headers: await headers()
-    // });
-
-    // if (!session) {
-    //     redirect("/sign-in");
-    // }
-    // redirect("/dashboard");
-    return <p>Hello World</p>;
+    redirect("/dashboard");
 }

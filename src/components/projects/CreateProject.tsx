@@ -8,26 +8,8 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/src/components/ui/select";
-import { MultiSelectFilter } from "./multi-select-filter";
-
-// Filter state type for future expansion
-export type ProjectFilters = {
-    projectName: string;
-    teams: string[];
-    ss: string;          // For future use
-    limit: string;       // For future use
-    status: string;      // For future use
-    unit: string;        // For future use
-};
-
-export const defaultFilters: ProjectFilters = {
-    projectName: "",
-    teams: [],
-    ss: "",
-    limit: "20",
-    status: "",
-    unit: "maua",
-};
+import { MultiSelectFilter } from "./MultiSelectFilter";
+import { ProjectFilters, defaultFilters } from "@/src/hooks/useProjectFilters";
 
 type CreateProjectButtonProps = {
     onAddClick?: () => void;
@@ -71,7 +53,7 @@ export function CreateProjectButton({
         <div className="flex flex-col xl:flex-row gap-3 items-start xl:items-center w-full">
             {/* 1. Select Principal (Unit) */}
             <Select value={filters.unit} onValueChange={handleUnitChange}>
-                <SelectTrigger className="w-full xl:w-[320px] h-10 bg-white border-slate-300">
+                <SelectTrigger className="w-full xl:w-[320px] h-10 bg-background border-border">
                     <SelectValue placeholder="Selecione a unidade" />
                 </SelectTrigger>
                 <SelectContent>
@@ -90,27 +72,27 @@ export function CreateProjectButton({
                     placeholder="SS..."
                     value={filters.ss}
                     onChange={(e) => handleSSChange(e.target.value)}
-                    className="w-20 bg-white border-slate-300"
+                    className="w-20 bg-background border-border"
                 />
 
                 <Input
                     placeholder="Nome do projeto..."
                     value={filters.projectName}
                     onChange={(e) => handleProjectNameChange(e.target.value)}
-                    className="flex-1 bg-white border-slate-300"
+                    className="flex-1 bg-background border-border"
                 />
 
                 <Input
                     value={filters.limit}
                     onChange={(e) => handleLimitChange(e.target.value)}
-                    className="w-[60px] bg-white border-slate-300 text-center"
+                    className="w-[60px] bg-background border-border text-center"
                 />
 
                 <Input
                     placeholder="Status"
                     value={filters.status}
                     onChange={(e) => handleStatusChange(e.target.value)}
-                    className="w-[100px] bg-white border-slate-300 hidden sm:block"
+                    className="w-[100px] bg-background border-border hidden sm:block"
                 />
             </div>
 

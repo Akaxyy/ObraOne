@@ -1,4 +1,4 @@
-import { Project } from "@/src/hooks/useProjects";
+import type { Project } from "@/src/types/projects";
 import { Button } from "@/src/components/ui/button";
 import {
     Pencil,
