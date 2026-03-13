@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import {
     Wrench, Scale, Bug, ChevronRight,
     FolderKanban, User, LogOut, MoreHorizontal, Settings
@@ -39,7 +39,7 @@ import {
 import { logout } from "@/src/actions/auth";
 
 const navItems = [
-    { title: "Projetos", icon: FolderKanban, url: "/dashboard/projetos" },
+    { title: "Projetos", icon: FolderKanban, url: "/dashboard" },
     {
         title: "Medições",
         icon: Wrench,
@@ -56,7 +56,6 @@ const navItems = [
 
 export function AppSidebar() {
     const pathname = usePathname();
-    const router = useRouter();
     const { open, setOpen } = useSidebar();
 
     const handleSignOut = async () => {

@@ -2,119 +2,111 @@ import { Plus } from "lucide-react";
 import { Button } from "@/src/components/ui/button";
 import { Input } from "@/src/components/ui/input";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
 } from "@/src/components/ui/select";
 import { MultiSelectFilter } from "./MultiSelectFilter";
-import { ProjectFilters, defaultFilters } from "@/src/hooks/useProjectFilters";
+import { ProjectFilters } from "@/src/hooks/useProjectFilters";
+import type { ProjectTeam } from "@/src/types/projects";
 
 type CreateProjectButtonProps = {
-    onAddClick?: () => void;
-    showAddButton?: boolean;
-    filters: ProjectFilters;
-    onFiltersChange: (filters: ProjectFilters) => void;
+  onAddClick?: () => void;
+  showAddButton?: boolean;
+  filters: ProjectFilters;
+  onFiltersChange: (filters: ProjectFilters) => void;
 };
 
 export function CreateProjectButton({
-    onAddClick,
-    showAddButton = true,
-    filters,
-    onFiltersChange,
+  onAddClick,
+  showAddButton = true,
+  filters,
+  onFiltersChange,
 }: CreateProjectButtonProps) {
+  const handleProjectNameChange = (value: string) => {
+    onFiltersChange({ ...filters, projectName: value });
+  };
 
-    const handleProjectNameChange = (value: string) => {
-        onFiltersChange({ ...filters, projectName: value });
-    };
+  const handleContractChange = (value: string) => {
+    onFiltersChange({ ...filters, contract: value });
+  };
 
-    const handleTeamsChange = (teams: string[]) => {
-        onFiltersChange({ ...filters, teams });
-    };
+  const handleSsChange = (value: string) => {
+    onFiltersChange({ ...filters, ss: value });
+  };
 
-    const handleSSChange = (value: string) => {
-        onFiltersChange({ ...filters, ss: value });
-    };
+  const handleBoletimChange = (value: string) => {
+    onFiltersChange({ ...filters, boletim: value });
+  };
 
-    const handleLimitChange = (value: string) => {
-        onFiltersChange({ ...filters, limit: value });
-    };
+  const handleTeamsChange = (teams: ProjectTeam[]) => {
+    onFiltersChange({ ...filters, teams });
+  };
 
-    const handleStatusChange = (value: string) => {
-        onFiltersChange({ ...filters, status: value });
-    };
+  return (
+    <div className="flex flex-col lg:flex-row gap-3 items-center w-full">
+      <div className="w-full lg:w-70 shrink-0">
+        <Select value={filters.contract} onValueChange={handleContractChange}>
+          <SelectTrigger className="w-full bg-background border-border text-left">
+            <SelectValue placeholder="Selecione o contrato..." />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="RECAP - REFINARIA DE CAPUAVA">
+              (5900.0127251.24.2) RECAP Mauá - SP
+            </SelectItem>
+            <SelectItem value="FAFEN - SE">
+              (ET-9525.02-3210-940-1MT-003) FAFEN - SE
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-    const handleUnitChange = (value: string) => {
-        onFiltersChange({ ...filters, unit: value });
-    };
+      <div className="w-full lg:w-25 shrink-0">
+        <Input
+          placeholder="SS..."
+          value={filters.ss}
+          onChange={(e) => handleSsChange(e.target.value)}
+          className="w-full bg-background border-border"
+        />
+      </div>
 
-    return (
-        <div className="flex flex-col xl:flex-row gap-3 items-start xl:items-center w-full">
-            {/* 1. Select Principal (Unit) */}
-            <Select value={filters.unit} onValueChange={handleUnitChange}>
-                <SelectTrigger className="w-full xl:w-[320px] h-10 bg-background border-border">
-                    <SelectValue placeholder="Selecione a unidade" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="maua">
-                        (5900.0127251.24.2) RECAP Mauá - SP
-                    </SelectItem>
-                    <SelectItem value="cubatao">
-                        RPBC Cubatão - SP
-                    </SelectItem>
-                </SelectContent>
-            </Select>
+      <div className="w-full flex-1 min-w-50">
+        <Input
+          placeholder="Nome do projeto..."
+          value={filters.projectName}
+          onChange={(e) => handleProjectNameChange(e.target.value)}
+          className="w-full bg-background border-border"
+        />
+      </div>
 
-            {/* Grupo de Inputs centrais */}
-            <div className="flex gap-3 flex-1 w-full">
-                <Input
-                    placeholder="SS..."
-                    value={filters.ss}
-                    onChange={(e) => handleSSChange(e.target.value)}
-                    className="w-20 bg-background border-border"
-                />
+      <div className="w-full lg:w-25 shrink-0">
+        <Input
+          placeholder="Boletim..."
+          value={filters.boletim}
+          onChange={(e) => handleBoletimChange(e.target.value)}
+          className="w-full bg-background border-border"
+        />
+      </div>
 
-                <Input
-                    placeholder="Nome do projeto..."
-                    value={filters.projectName}
-                    onChange={(e) => handleProjectNameChange(e.target.value)}
-                    className="flex-1 bg-background border-border"
-                />
+      <div className="w-full lg:w-45 shrink-0">
+        <MultiSelectFilter
+          selected={filters.teams}
+          onSelectionChange={handleTeamsChange}
+          placeholder="Filtrar equipe..."
+        />
+      </div>
 
-                <Input
-                    value={filters.limit}
-                    onChange={(e) => handleLimitChange(e.target.value)}
-                    className="w-[60px] bg-background border-border text-center"
-                />
-
-                <Input
-                    placeholder="Status"
-                    value={filters.status}
-                    onChange={(e) => handleStatusChange(e.target.value)}
-                    className="w-[100px] bg-background border-border hidden sm:block"
-                />
-            </div>
-
-            {/* MultiSelect for Teams */}
-            <div className="w-full xl:w-auto shrink-0">
-                <MultiSelectFilter
-                    selected={filters.teams}
-                    onSelectionChange={handleTeamsChange}
-                    placeholder="Filtrar Equipe..."
-                />
-            </div>
-
-            {/* Botão de Ação */}
-            {showAddButton && (
-                <Button
-                    onClick={onAddClick}
-                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium gap-2 shadow-sm w-full xl:w-auto mt-2 xl:mt-0"
-                >
-                    <Plus className="h-4 w-4" />
-                    Novo Projeto
-                </Button>
-            )}
-        </div>
-    );
+      {showAddButton && (
+        <Button
+          onClick={onAddClick}
+          className="bg-blue-600 hover:bg-blue-700 text-white font-medium gap-2 shadow-sm w-full lg:w-auto shrink-0"
+        >
+          <Plus className="h-4 w-4" />
+          Novo Projeto
+        </Button>
+      )}
+    </div>
+  );
 }

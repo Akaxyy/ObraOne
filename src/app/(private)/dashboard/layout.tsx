@@ -1,6 +1,5 @@
 import { AppSidebar } from "@/src/components/AppSidebar"; // O arquivo novo acima
 import Navbar from "@/src/components/Navbar";
-import { headers } from "next/headers";
 import { SidebarProvider, SidebarInset, SidebarTrigger } from "@/src/components/ui/sidebar";
 
 export default async function DashboardLayout({

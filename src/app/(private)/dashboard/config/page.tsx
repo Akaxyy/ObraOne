@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 // UI primitives
 import { Card, CardHeader, CardFooter, CardTitle, CardContent, CardDescription } from "@/src/components/ui/card";
@@ -8,19 +8,18 @@ import { ModeToggle } from "@/src/components/ModeToggle";
 
 // Config page: simple interface to adjust theme and language
 export default function Page() {
-  // Local state for language preference
-  const [locale, setLocale] = useState<string>("pt-BR");
-  const [savedAt, setSavedAt] = useState<string | null>(null);
-
-  // Load initial locale from localStorage if available
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem("obra.locale");
-      if (stored) setLocale(stored);
-    } catch {
-      // ignore
+  const [locale, setLocale] = useState<string>(() => {
+    if (typeof window === "undefined") {
+      return "pt-BR";
     }
-  }, []);
+
+    try {
+      return localStorage.getItem("obra.locale") ?? "pt-BR";
+    } catch {
+      return "pt-BR";
+    }
+  });
+  const [savedAt, setSavedAt] = useState<string | null>(null);
 
   // Persist locale choice
   function saveLocale(next: string) {

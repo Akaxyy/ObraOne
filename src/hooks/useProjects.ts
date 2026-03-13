@@ -1,183 +1,154 @@
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { createClient } from '@/src/lib/supabase/client'
-import type { Project, ProjectFormData } from '@/src/types/projects'
-
-// Re-export types and utilities for backward compatibility
-export type { Project, ProjectFormData } from '@/src/types/projects'
-export { TEAM_OPTIONS, TEAM_COLORS, createEmptyFormData, projectToFormData } from '@/src/types/projects'
-export { formatCurrency } from '@/src/lib/format'
+import { toProjectMutation, type Project, type ProjectFormData } from '@/src/types/projects'
 
 export type UseProjectsReturn = {
-    // State
-    projects: Project[]
-    loading: boolean
-    saving: boolean
-    lastUpdate: Date | null
-    error: string | null
-
-    // Actions
-    addProject: (data: ProjectFormData) => Promise<boolean>
-    updateProject: (id: string, data: ProjectFormData) => Promise<boolean>
-    deleteProject: (id: string) => Promise<boolean>
-    refreshProjects: () => Promise<void>
+  projects: Project[]
+  loading: boolean
+  saving: boolean
+  error: string | null
+  addProject: (data: ProjectFormData) => Promise<boolean>
+  updateProject: (id: string, data: ProjectFormData) => Promise<boolean>
+  deleteProject: (id: string) => Promise<boolean>
 }
 
-export function useProjects(limit: number = 20): UseProjectsReturn {
-    const supabase = useMemo(() => createClient(), [])
+function getErrorMessage(error: unknown) {
+  if (error instanceof Error) {
+    return error.message
+  }
 
-    const [projects, setProjects] = useState<Project[]>([])
-    const [loading, setLoading] = useState(true)
-    const [saving, setSaving] = useState(false)
-    const [lastUpdate, setLastUpdate] = useState<Date | null>(null)
-    const [error, setError] = useState<string | null>(null)
+  if (typeof error === 'object' && error !== null && 'message' in error) {
+    const message = error.message
 
-    // Fetch projects
-    const fetchProjects = useCallback(async () => {
-        setLoading(true)
-        setError(null)
-
-        const { data, error: fetchError } = await supabase
-            .from('projects')
-            .select('*')
-            .order('createdAt', { ascending: false })
-            .limit(limit)
-
-        if (fetchError) {
-            console.error('Error fetching projects:', fetchError)
-            setError(fetchError.message)
-        } else {
-            setProjects(data || [])
-        }
-        setLoading(false)
-    }, [supabase, limit])
-
-    // Add project
-    const addProject = useCallback(async (data: ProjectFormData): Promise<boolean> => {
-        setSaving(true)
-        setError(null)
-
-        const { error: insertError } = await supabase.from('projects').insert({
-            projectName: data.projectName,
-            tag: data.tag || null,
-            scope: data.scope || null,
-            team: data.team,
-            valueBudget: data.valueBudget,
-            valueRealized: data.valueRealized,
-            createdAt: new Date().toISOString(),
-            updatedAt: new Date().toISOString(),
-        })
-
-        setSaving(false)
-
-        if (insertError) {
-            console.error('Error adding project:', insertError)
-            setError(insertError.message)
-            return false
-        }
-
-        return true
-    }, [supabase])
-
-    // Update project
-    const updateProject = useCallback(async (id: string, data: ProjectFormData): Promise<boolean> => {
-        setSaving(true)
-        setError(null)
-
-        const { error: updateError } = await supabase
-            .from('projects')
-            .update({
-                projectName: data.projectName,
-                tag: data.tag || null,
-                scope: data.scope || null,
-                team: data.team,
-                valueBudget: data.valueBudget,
-                valueRealized: data.valueRealized,
-                updatedAt: new Date().toISOString(),
-            })
-            .eq('id', id)
-
-        setSaving(false)
-
-        if (updateError) {
-            console.error('Error updating project:', updateError)
-            setError(updateError.message)
-            return false
-        }
-
-        return true
-    }, [supabase])
-
-    // Delete project
-    const deleteProject = useCallback(async (id: string): Promise<boolean> => {
-        setSaving(true)
-        setError(null)
-
-        const { error: deleteError } = await supabase
-            .from('projects')
-            .delete()
-            .eq('id', id)
-
-        setSaving(false)
-
-        if (deleteError) {
-            console.error('Error deleting project:', deleteError)
-            setError(deleteError.message)
-            return false
-        }
-
-        return true
-    }, [supabase])
-
-    // Initial fetch and Realtime subscription
-    useEffect(() => {
-        fetchProjects()
-
-        // Subscribe to Realtime changes
-        const channel = supabase
-            .channel('projects-realtime')
-            .on(
-                'postgres_changes',
-                {
-                    event: '*',
-                    schema: 'public',
-                    table: 'projects',
-                },
-                (payload) => {
-                    setLastUpdate(new Date())
-
-                    if (payload.eventType === 'INSERT') {
-                        setProjects((prev) => [payload.new as Project, ...prev])
-                    } else if (payload.eventType === 'UPDATE') {
-                        setProjects((prev) =>
-                            prev.map((p) =>
-                                p.id === (payload.new as Project).id
-                                    ? (payload.new as Project)
-                                    : p
-                            )
-                        )
-                    } else if (payload.eventType === 'DELETE') {
-                        setProjects((prev) =>
-                            prev.filter((p) => p.id !== (payload.old as Project).id)
-                        )
-                    }
-                }
-            )
-            .subscribe()
-
-        return () => {
-            supabase.removeChannel(channel)
-        }
-    }, [supabase, fetchProjects])
-
-    return {
-        projects,
-        loading,
-        saving,
-        lastUpdate,
-        error,
-        addProject,
-        updateProject,
-        deleteProject,
-        refreshProjects: fetchProjects,
+    if (typeof message === 'string') {
+      return message
     }
+  }
+
+  return 'Erro inesperado ao processar projetos.'
+}
+
+export function useProjects(limit = 20): UseProjectsReturn {
+  const [supabase] = useState(() => createClient())
+  const [projects, setProjects] = useState<Project[]>([])
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+
+  const fetchProjects = useCallback(async () => {
+    setLoading(true)
+    setError(null)
+
+    try {
+      const { data, error: fetchError } = await supabase
+        .from('projects')
+        .select('*')
+        .order('createdAt', { ascending: false })
+        .limit(limit)
+
+      if (fetchError) {
+        throw fetchError
+      }
+
+      setProjects(data ?? [])
+    } catch (fetchError) {
+      console.error('Error fetching projects:', fetchError)
+      setError(getErrorMessage(fetchError))
+    } finally {
+      setLoading(false)
+    }
+  }, [limit, supabase])
+
+  const runMutation = useCallback(
+    async (mutation: () => Promise<{ error: { message: string } | null }>) => {
+      setSaving(true)
+      setError(null)
+
+      try {
+        const { error: mutationError } = await mutation()
+
+        if (mutationError) {
+          throw mutationError
+        }
+
+        await fetchProjects()
+        return true
+      } catch (mutationError) {
+        console.error('Error mutating projects:', mutationError)
+        setError(getErrorMessage(mutationError))
+        return false
+      } finally {
+        setSaving(false)
+      }
+    },
+    [fetchProjects]
+  )
+
+  const addProject = useCallback(
+    async (data: ProjectFormData) => {
+      const now = new Date().toISOString()
+
+      return runMutation(() =>
+        supabase.from('projects').insert({
+          ...toProjectMutation(data),
+          createdAt: now,
+          updatedAt: now,
+        })
+      )
+    },
+    [runMutation, supabase]
+  )
+
+  const updateProject = useCallback(
+    async (id: string, data: ProjectFormData) =>
+      runMutation(() =>
+        supabase
+          .from('projects')
+          .update({
+            ...toProjectMutation(data),
+            updatedAt: new Date().toISOString(),
+          })
+          .eq('id', id)
+      ),
+    [runMutation, supabase]
+  )
+
+  const deleteProject = useCallback(
+    async (id: string) =>
+      runMutation(() => supabase.from('projects').delete().eq('id', id)),
+    [runMutation, supabase]
+  )
+
+  useEffect(() => {
+    void fetchProjects()
+
+    const channel = supabase
+      .channel('projects-realtime')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'projects',
+        },
+        () => {
+          void fetchProjects()
+        }
+      )
+      .subscribe()
+
+    return () => {
+      void supabase.removeChannel(channel)
+    }
+  }, [fetchProjects, supabase])
+
+  return {
+    projects,
+    loading,
+    saving,
+    error,
+    addProject,
+    updateProject,
+    deleteProject,
+  }
 }
